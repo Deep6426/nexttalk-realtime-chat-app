@@ -1,28 +1,55 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Message from "@/lib/messageModel";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    console.log("STEP 1");
-
     await connectDB();
 
-    console.log("STEP 2");
+    const sender = req.nextUrl.searchParams.get("sender");
+    const receiver = req.nextUrl.searchParams.get("receiver");
 
-    console.log("Message model:", Message);
+    if (!sender || !receiver) {
+      return NextResponse.json([]);
+    }
 
-    const messages = await Message.find();
-
-    console.log("STEP 3", messages);
+    const messages = await Message.find({
+      $or: [
+        { username: sender, receiver: receiver },
+        { username: receiver, receiver: sender },
+      ],
+    }).sort({ createdAt: 1 });
 
     return NextResponse.json(messages);
   } catch (error) {
-    console.log("FULL ERROR:");
-    console.dir(error, { depth: null });
+    console.error(error);
 
     return NextResponse.json(
       { error: "Failed to fetch messages" },
+      { status: 500 }
+    );
+  }
+}
+
+
+export async function POST(req: NextRequest) {
+  try {
+    await connectDB();
+
+    const body = await req.json();
+
+    const message = await Message.create({
+      username: body.username,
+      receiver: body.receiver,
+      text: body.text,
+    });
+
+    return NextResponse.json(message, { status: 201 });
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      { error: "Failed to create message" },
       { status: 500 }
     );
   }

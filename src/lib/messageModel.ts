@@ -10,10 +10,10 @@ const messageSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    room: {
-      type: String,
-      default: "General Chat",
-    },
+    receiver: {
+  type: String,
+  required: true,
+},
   },
   {
     timestamps: true,

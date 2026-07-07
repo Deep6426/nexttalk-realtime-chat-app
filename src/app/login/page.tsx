@@ -38,8 +38,14 @@ export default function LoginPage() {
         setMessage(data.message);
         setIsError(!data.success);
         if(data.success){
-            router.push("/chat");
-        }
+
+    localStorage.setItem(
+      "username",
+      data.user.username
+    );
+
+    router.push("/chat");
+}
 
         setLoading(false);
 

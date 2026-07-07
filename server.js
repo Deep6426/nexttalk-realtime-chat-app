@@ -11,6 +11,7 @@ const io = new Server(httpServer, {
         origin: "http://localhost:3000",
     },
 });
+const onlineUsers = new Map();
 const MessageSchema = new mongoose.Schema(
   {
     username: String,
@@ -22,7 +23,9 @@ const MessageSchema = new mongoose.Schema(
   }
 );
 
-const Message = mongoose.model("Message", MessageSchema);
+const Message =
+  mongoose.models.Message ||
+  mongoose.model("Message", MessageSchema);
 console.log("Mongo URI:", process.env.MONGODB_URI);
 console.log("Mongo URI exists:", !!process.env.MONGODB_URI);
 
@@ -32,18 +35,39 @@ mongoose
   .catch((err) => console.log(err));
 io.on("connection", (socket) => {
     console.log("User connected", socket.id);
+    socket.on("user-online", (username) => {
+    console.log(username, "is online");
 
-    socket.on("send-message", async (messageData) => {
-  console.log("Message received:", messageData);
+    onlineUsers.set(username, socket.id);
 
+    console.log("ONLINE USERS:", [...onlineUsers.keys()]);
+
+    io.emit("online-users", [...onlineUsers.keys()]);
+});
+    let currentRoom = null;
+    socket.on("join-room", (room) => {
+    if (currentRoom) {
+        socket.leave(currentRoom);
+    }
+
+    socket.join(room);
+    currentRoom = room;
+
+    console.log(`${socket.id} joined ${room}`);
+});
+  socket.on("typing", (data) => {
+    console.log("SERVER RECEIVED TYPING:", data);
+    io.emit("typing", data);
+});
+   socket.on("send-message", async (messageData) => {
+    console.log("SEND MESSAGE EVENT:", messageData);
   try {
-    await Message.create({
-      username: messageData.username,
-      text: messageData.text,
-      room: messageData.room,
-    });
+    
 
-    io.emit("receive-message", messageData);
+    io.emit(
+    "receive-message",
+    messageData
+);
   } catch (error) {
     console.log(error);
   }
