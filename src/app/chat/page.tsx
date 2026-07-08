@@ -354,7 +354,12 @@ console.log("USERS:", prev.map(u => u.username));
   socketRef.current?.off("receive-message");
   socketRef.current?.off("typing");
 };
-}, [username, selectedUser]);
+}, []);
+useEffect(() => {
+    if (socketRef.current && username) {
+        socketRef.current.emit("user-online", username);
+    }
+}, [username]);
 
     const handleLogout = () => {
         router.push("/login");
