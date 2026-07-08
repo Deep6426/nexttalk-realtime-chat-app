@@ -1,14 +1,22 @@
-const { createServer} = require("http");
+const express = require("express");
+const { createServer } = require("http");
 const { Server } = require("socket.io");
 require("dotenv").config({ path: ".env.local" });
 
 const mongoose = require("mongoose");
 
-const httpServer = createServer();
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("Socket server running");
+});
+
+const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
     origin: "*",
+    methods: ["GET", "POST"],
   },
 });
 const onlineUsers = new Map();
