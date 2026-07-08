@@ -22,8 +22,9 @@ export default function ChatPage() {
    
     const socketRef = useRef<any>(null);
     useEffect(() => {
-  socketRef.current = io("gracious-possibility-production-7916.up.railway.app");
-
+  socketRef.current = io("https://gracious-possibility-production-7916.up.railway.app", {
+  transports: ["websocket", "polling"],
+});
   socketRef.current.on("connect", () => {
   console.log("Socket connected:", socketRef.current.id);
 
