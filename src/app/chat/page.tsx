@@ -14,6 +14,7 @@ export default function ChatPage() {
     
     const [messages, setMessages] = useState<any[]>([]);
     const [users, setUsers] = useState<any[]>([]);
+    const [lastMessages, setLastMessages] = useState<Record<string, string>>({});
 
  const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement | null> (null);
@@ -138,6 +139,24 @@ if (!socketRef.current) {
         socketRef.current.emit("send-message", newMessage)
         
         setMessage("");
+        setLastMessages((prev) => ({
+  ...prev,
+  [selectedUser.username]: message,
+}));
+
+setUsers((prev) => {
+  const updated = [...prev];
+  const index = updated.findIndex(
+    (u) => u.username === selectedUser.username
+  );
+
+  if (index > -1) {
+    const [user] = updated.splice(index, 1);
+    updated.unshift(user);
+  }
+
+  return updated;
+});
         
         
     };
@@ -199,6 +218,19 @@ setMessages(
     };
   })
 );
+if (data.length > 0) {
+    setLastMessages((prev) => ({
+        ...prev,
+        [selectedUser.username]: data[data.length - 1].text,
+    }));
+}
+setLastMessages((prev) => ({
+    ...prev,
+    [selectedUser.username]:
+        data.length > 0
+            ? data[data.length - 1].text
+            : prev[selectedUser.username],
+}));
 console.log("✅ Loaded from API");
     } catch (error) {
       console.log(error);
@@ -228,6 +260,13 @@ fetchMessages();
   (messageData: any) => {
 
     console.log("SOCKET RECEIVED:", messageData);
+    const chatUser =
+  messageData.username === username
+    ? messageData.receiver
+    : messageData.username;
+
+console.log("chatUser =", chatUser);
+console.log("message =", messageData.text);
     if (
   !selectedUser ||
   !(
@@ -258,6 +297,36 @@ fetchMessages();
         }),
       },
     ]);
+    console.log("chatUser =", chatUser);
+console.log("message =", messageData.text);
+    setLastMessages((prev) => ({
+  ...prev,
+  [
+    messageData.username === username
+      ? messageData.receiver
+      : messageData.username
+  ]: messageData.text,
+}));
+setUsers((prev) => {
+  const chatUser =
+    messageData.username === username
+      ? messageData.receiver
+      : messageData.username;
+      console.log("CHAT USER:", chatUser);
+console.log("USERS:", prev.map(u => u.username));
+
+  const updated = [...prev];
+  const index = updated.findIndex(
+    (u) => u.username === chatUser
+  );
+
+  if (index > -1) {
+    const [user] = updated.splice(index, 1);
+    updated.unshift(user);
+  }
+
+  return updated;
+});
     console.log("✅ Added from SOCKET");
   }
 );socketRef.current?.on("typing", (data: any) => {
@@ -311,6 +380,7 @@ fetchMessages();
 };
 console.log("Selected User:", selectedUser);
 console.log("MESSAGES STATE:", messages);
+console.log("LAST MESSAGES =", lastMessages);
     return (
   <main className="h-screen w-screen bg-black text-white flex overflow-hidden">
 
@@ -352,6 +422,11 @@ console.log("MESSAGES STATE:", messages);
       <span className="w-3 h-3 rounded-full bg-green-500"></span>
     )}
   </div>
+ 
+
+<p className="text-sm text-gray-400 truncate mt-1">
+    {lastMessages[user.username] || "No messages yet"}
+</p>
 </button>
 ))}
         </div>
