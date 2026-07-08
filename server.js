@@ -6,10 +6,10 @@ const mongoose = require("mongoose");
 
 const httpServer = createServer();
 
-const io = new Server(httpServer, {  
-    cors: {
-        origin: process.env.FRONTEND_URL,
-    },
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+  },
 });
 const onlineUsers = new Map();
 const MessageSchema = new mongoose.Schema(
@@ -60,16 +60,12 @@ io.on("connection", (socket) => {
     io.emit("typing", data);
 });
    socket.on("send-message", async (messageData) => {
-    console.log("SEND MESSAGE EVENT:", messageData);
   try {
-    
+    const message = await Message.create(messageData);
 
-    io.emit(
-    "receive-message",
-    messageData
-);
-  } catch (error) {
-    console.log(error);
+    io.emit("receive-message", message);
+  } catch (err) {
+    console.log(err);
   }
 });
 

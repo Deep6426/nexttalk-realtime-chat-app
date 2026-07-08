@@ -22,7 +22,7 @@ export default function ChatPage() {
    
     const socketRef = useRef<any>(null);
     useEffect(() => {
-  socketRef.current = io("http://localhost:3001");
+  socketRef.current = io("gracious-possibility-production-7916.up.railway.app");
 
   socketRef.current.on("connect", () => {
   console.log("Socket connected:", socketRef.current.id);
