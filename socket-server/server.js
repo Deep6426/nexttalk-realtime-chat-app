@@ -18,8 +18,9 @@ const onlineUsers = new Map();
 const MessageSchema = new mongoose.Schema(
   {
     username: String,
+    receiver: String,
     text: String,
-    room: String,
+    sender: String,
   },
   {
     timestamps: true,

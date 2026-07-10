@@ -27,10 +27,6 @@ export default function ChatPage() {
 });
   socketRef.current.on("connect", () => {
   console.log("Socket connected:", socketRef.current.id);
-
-  if (username) {
-    socketRef.current.emit("user-online", username);
-  }
 });
 socketRef.current.on("online-users", (users: string[]) => {
     console.log("Online Users:", users);
@@ -65,7 +61,7 @@ socketRef.current.on("typing", (data: any) => {
   socketRef.current?.disconnect();
   socketRef.current?.off("online-users");
 };
-}, [username,selectedUser]);
+}, []);
    
 useEffect(() => {
   const storedUser =
@@ -77,6 +73,13 @@ useEffect(() => {
   }
   
 }, []);
+useEffect(() => {
+  if (socketRef.current && username) {
+    console.log("Emitting user-online:", username);
+
+    socketRef.current.emit("user-online", username);
+  }
+}, [username]);
    const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
   setMessage(e.target.value);
 
@@ -91,6 +94,10 @@ useEffect(() => {
 };;
 
     const handleSend = async () => {
+       if (!selectedUser) {
+    alert("Please select a user first.");
+    return;
+  }
       
         if(!message.trim()) return;
 
@@ -147,9 +154,15 @@ if (!socketRef.current) {
 
 setUsers((prev) => {
   const updated = [...prev];
-  const index = updated.findIndex(
-    (u) => u.username === selectedUser.username
-  );
+  if (!selectedUser) return prev;
+
+const chatUser = selectedUser?.username;
+
+if (!chatUser) return prev;
+
+const index = updated.findIndex(
+  (u) => u.username === chatUser
+);
 
   if (index > -1) {
     const [user] = updated.splice(index, 1);
@@ -254,13 +267,16 @@ fetchMessages();
 }, [selectedUser, username]);
     useEffect(() => {
       console.log("REGISTERING receive-message listener");
-  if (!username) return;
+  if (!username || !socketRef.current) return;
+  socketRef.current?.off("receive-message");
 
   socketRef.current?.on(
   "receive-message",
   (messageData: any) => {
 
     console.log("SOCKET RECEIVED:", messageData);
+console.log("selectedUser =", selectedUser);
+console.log("username =", username);
     const chatUser =
   messageData.username === username
     ? messageData.receiver
@@ -330,31 +346,13 @@ console.log("USERS:", prev.map(u => u.username));
 });
     console.log("✅ Added from SOCKET");
   }
-);socketRef.current?.on("typing", (data: any) => {
-  console.log("Typing received:", data);
-
-  console.log("selectedUser =", selectedUser?.username);
-  console.log("username =", username);
-
-  if (
-    data.sender === selectedUser?.username &&
-    data.receiver === username
-  ) {
-    console.log("MATCHED!");
-
-    setIsTyping(true);
-
-    setTimeout(() => {
-      setIsTyping(false);
-    }, 1000);
-  }
-});
+);
 
   return () => {
   socketRef.current?.off("receive-message");
-  socketRef.current?.off("typing");
+  
 };
-}, []);
+}, [selectedUser, username]);
 useEffect(() => {
     if (socketRef.current && username) {
         socketRef.current.emit("user-online", username);
