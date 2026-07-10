@@ -1,4 +1,7 @@
-const { createServer} = require("http");
+const express = require("express");
+const app = express();
+
+const { createServer } = require("http");
 const { Server } = require("socket.io");
 require("dotenv").config({ path: ".env.local" });
 
