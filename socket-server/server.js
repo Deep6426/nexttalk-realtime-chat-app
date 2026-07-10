@@ -4,7 +4,7 @@ require("dotenv").config({ path: ".env.local" });
 
 const mongoose = require("mongoose");
 
-const httpServer = createServer();
+const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
@@ -33,6 +33,9 @@ mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("Socket MongoDB connected"))
   .catch((err) => console.log(err));
+  app.get("/", (req, res) => {
+  res.send("Socket Server Running");
+});
 io.on("connection", (socket) => {
     console.log("User connected", socket.id);
     socket.on("user-online", (username) => {
