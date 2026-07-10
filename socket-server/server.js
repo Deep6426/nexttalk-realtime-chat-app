@@ -66,12 +66,20 @@ io.on("connection", (socket) => {
     io.emit("typing", data);
 });
    socket.on("send-message", async (messageData) => {
+  console.log("SERVER RECEIVED MESSAGE:", messageData);
+
   try {
     const message = await Message.create(messageData);
 
+    console.log("MESSAGE SAVED:", message);
+
+    console.log("EMITTING receive-message");
+
     io.emit("receive-message", message);
+
+    console.log("EMITTED receive-message");
   } catch (err) {
-    console.log(err);
+    console.log("MESSAGE ERROR:", err);
   }
 });
 
