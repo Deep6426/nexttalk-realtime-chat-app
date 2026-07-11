@@ -18,13 +18,14 @@ export const connectDB = async () => {
   
   
   await mongoose.connect(MONGODB_URI);
+ 
 
   console.log("AFTER CONNECT");
 
   isConnected = true;
   
 
-console.log("STATE:", mongoose.connection.readyState);
+
 
 
 

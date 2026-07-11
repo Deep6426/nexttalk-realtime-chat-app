@@ -26,25 +26,24 @@ export default function ChatPage() {
   transports: ["websocket", "polling"],
 });
   socketRef.current.on("connect", () => {
-  console.log("Socket connected:", socketRef.current.id);
+  
 });
 socketRef.current.on("online-users", (users: string[]) => {
-    console.log("Online Users:", users);
+    
     setOnlineUsers(users);
 });
 
   
 socketRef.current.on("typing", (data: any) => {
-  console.log("Typing received:", data);
+  
 
-  console.log("selectedUser =", selectedUser?.username);
-  console.log("username =", username);
+  
 
   if (
     data.sender === selectedUser?.username &&
     data.receiver === username
   ) {
-    console.log("MATCHED!");
+    
 
     setIsTyping(true);
 
@@ -69,13 +68,13 @@ useEffect(() => {
 
   if (storedUser) {
     setUsername(storedUser);
-    console.log("Stored User:", storedUser);
+    
   }
   
 }, []);
 useEffect(() => {
   if (socketRef.current && username) {
-    console.log("Emitting user-online:", username);
+    
 
     socketRef.current.emit("user-online", username);
   }
@@ -85,7 +84,7 @@ useEffect(() => {
 
   if (!selectedUser) return;
 
-  console.log("Sending typing event");
+ 
 
   socketRef.current.emit("typing", {
     sender: username,
@@ -113,13 +112,9 @@ useEffect(() => {
   }),
 };
 try {
-  console.log("Selected User:", selectedUser);
+  
 
-console.log({
-  username,
-  receiver: selectedUser?.username,
-  text: message,
-});
+
   await fetch("/api/messages", {
     method: "POST",
     headers: {
@@ -134,7 +129,7 @@ console.log({
 } catch (error) {
   console.error(error);
 }
-console.log("socketRef.current =", socketRef.current);
+
 
 if (!socketRef.current) {
   console.error("Socket is NULL!");
@@ -184,16 +179,17 @@ const index = updated.findIndex(
   const fetchMessages = async () => {
     try {
       if (!selectedUser) return;
-
+ 
+      
 const response = await fetch(
-  `/api/messages?sender=${username}&receiver=${selectedUser.username}`
+  `/api/messages?sender=${encodeURIComponent(username)}&receiver=${encodeURIComponent(selectedUser.username)}`
 );
 
 const data = await response.json();
-console.log("Fetched from API:", data);
+
     
 
-console.log("Fetched:", data);
+
 
 if (!Array.isArray(data)) {
   console.error("API did not return array");
@@ -205,15 +201,7 @@ if (!Array.isArray(data)) {
 
 setMessages(
   data.map((msg: any) => {
-    console.log(
-      "MSG:",
-      msg.username,
-      "USER:",
-      username,
-      "RESULT:",
-      msg.username === username
-    );
-
+    
     return {
   id: msg._id,
   text: msg.text,
@@ -245,9 +233,9 @@ setLastMessages((prev) => ({
             ? data[data.length - 1].text
             : prev[selectedUser.username],
 }));
-console.log("✅ Loaded from API");
+
     } catch (error) {
-      console.log(error);
+      
     }
   };
   const fetchUsers = async () => {
@@ -266,7 +254,7 @@ if (!username || !selectedUser) return;
 fetchMessages();
 }, [selectedUser, username]);
     useEffect(() => {
-      console.log("REGISTERING receive-message listener");
+     
   if (!username || !socketRef.current) return;
   socketRef.current?.off("receive-message");
 
@@ -274,16 +262,13 @@ fetchMessages();
   "receive-message",
   (messageData: any) => {
 
-    console.log("SOCKET RECEIVED:", messageData);
-console.log("selectedUser =", selectedUser);
-console.log("username =", username);
+    
     const chatUser =
   messageData.username === username
     ? messageData.receiver
     : messageData.username;
 
-console.log("chatUser =", chatUser);
-console.log("message =", messageData.text);
+
     if (
   !selectedUser ||
   !(
@@ -314,8 +299,7 @@ console.log("message =", messageData.text);
         }),
       },
     ]);
-    console.log("chatUser =", chatUser);
-console.log("message =", messageData.text);
+    
     setLastMessages((prev) => ({
   ...prev,
   [
@@ -329,8 +313,7 @@ setUsers((prev) => {
     messageData.username === username
       ? messageData.receiver
       : messageData.username;
-      console.log("CHAT USER:", chatUser);
-console.log("USERS:", prev.map(u => u.username));
+      
 
   const updated = [...prev];
   const index = updated.findIndex(
@@ -344,7 +327,7 @@ console.log("USERS:", prev.map(u => u.username));
 
   return updated;
 });
-    console.log("✅ Added from SOCKET");
+    
   }
 );
 
@@ -382,9 +365,7 @@ useEffect(() => {
 
   return colors[hash % colors.length];
 };
-console.log("Selected User:", selectedUser);
-console.log("MESSAGES STATE:", messages);
-console.log("LAST MESSAGES =", lastMessages);
+
     return (
   <main className="h-screen w-screen bg-black text-white flex overflow-hidden">
 
@@ -462,7 +443,9 @@ console.log("LAST MESSAGES =", lastMessages);
       {/* MESSAGES */}
         <div className="flex-1 p-6 overflow-y-auto space-y-4">
 
-        
+        <p className="text-red-500">
+  Messages Count: {messages.length}
+</p>
         {messages
   .filter(
     (msg) =>
@@ -474,6 +457,7 @@ console.log("LAST MESSAGES =", lastMessages);
           msg.receiver === username)
       )
   )
+  
   .map((msg) => (
             
             <div

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Message from "@/lib/messageModel";
+import mongoose from "mongoose";
 
 export async function GET(req: NextRequest) {
   try {
@@ -8,6 +9,7 @@ export async function GET(req: NextRequest) {
 
     const sender = req.nextUrl.searchParams.get("sender");
     const receiver = req.nextUrl.searchParams.get("receiver");
+   
 
     if (!sender || !receiver) {
       return NextResponse.json([]);
@@ -19,6 +21,8 @@ export async function GET(req: NextRequest) {
         { username: receiver, receiver: sender },
       ],
     }).sort({ createdAt: 1 });
+    
+    
 
     return NextResponse.json(messages);
   } catch (error) {
@@ -43,6 +47,20 @@ export async function POST(req: NextRequest) {
       receiver: body.receiver,
       text: body.text,
     });
+    
+
+if (!mongoose.connection.db) {
+    console.log("DB not connected");
+    return;
+}
+
+const collections =
+    await mongoose.connection.db.listCollections().toArray();
+
+
+
+const all = await Message.find();
+
 
     return NextResponse.json(message, { status: 201 });
   } catch (error) {
