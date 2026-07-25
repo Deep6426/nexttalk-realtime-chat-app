@@ -1,28 +1,28 @@
-# 🚀 NexTalk - Real-Time Chat Application
+#  NexTalk - Real-Time Chat Application
 
 A full-stack real-time chat application built with **Next.js**, **TypeScript**, **Socket.IO**, **MongoDB Atlas**, and **Tailwind CSS**. Users can sign up, log in, chat instantly, view online users, and access previous conversations.
 
 ---
 
-## 🌐 Live Demo
+##  Live Demo
 
-🔗 https://nexttalk-realtime-chat-app-production.up.railway.app/login
-
----
-
-## ✨ Features
-
-- 🔐 User Authentication (Signup & Login)
-- 💬 Real-time messaging using Socket.IO
-- 🟢 Online user status
-- 💾 Persistent chat history with MongoDB Atlas
-- 📱 Responsive UI
-- ⚡ Fast Next.js App Router architecture
-- ☁️ Deployed on Railway
+ https://nexttalk-realtime-chat-app-production.up.railway.app/login
 
 ---
 
-## 🛠️ Tech Stack
+##  Features
+
+-  User Authentication (Signup & Login)
+-  Real-time messaging using Socket.IO
+-  Online user status
+-  Persistent chat history with MongoDB Atlas
+-  Responsive UI
+-  Fast Next.js App Router architecture
+-  Deployed on Railway
+
+---
+
+##  Tech Stack
 
 ### Frontend
 - Next.js 15
@@ -43,7 +43,7 @@ A full-stack real-time chat application built with **Next.js**, **TypeScript**, 
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```
 nexttalk-realtime-chat-app/
@@ -64,7 +64,7 @@ nexttalk-realtime-chat-app/
 
 ---
 
-## 🚀 Installation
+##  Installation
 
 Clone the repository
 
@@ -98,7 +98,7 @@ node server.js
 
 ---
 
-## 🔑 Environment Variables
+##  Environment Variables
 
 Create a `.env.local` file and add:
 
@@ -110,7 +110,7 @@ NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
 
 ---
 
-## 📸 Screenshots
+##  Screenshots
 
 ### Login Page
 
@@ -122,7 +122,7 @@ NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
 
 ---
 
-## 📌 Future Improvements
+##  Future Improvements
 
 - Typing indicator
 - Read receipts
@@ -133,7 +133,7 @@ NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
 
 ---
 
-## 👨‍💻 Author
+##  Author
 
 **Diptanshu Raut**
 
@@ -141,6 +141,6 @@ GitHub: https://github.com/Deep6426
 
 ---
 
-## 📜 License
+##  License
 
 This project is for educational and internship purposes.
