@@ -372,7 +372,7 @@ useEffect(() => {
     {/* SIDEBAR */}
     <aside className="w-72 border-r border-zinc-800 p-4 flex flex-col">
       <h1 className="text-3xl font-bold">
-        NexTalk 🚀
+        NexTalk 
       </h1>
 
       <button
